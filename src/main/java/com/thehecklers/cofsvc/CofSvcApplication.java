@@ -1,8 +1,5 @@
 package com.thehecklers.cofsvc;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,10 +9,6 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,9 +30,13 @@ public class CofSvcApplication {
 }
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 class DataLoader {
     private final CoffeeRepo repo;
+
+    DataLoader(CoffeeRepo repo) {
+        this.repo = repo;
+    }
 
     @PostConstruct
     private void load() {
@@ -62,9 +59,13 @@ class DataLoader {
 }
 
 @Configuration
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 class RouteConfig {
     private final CoffeeService service;
+
+    RouteConfig(CoffeeService service) {
+        this.service = service;
+    }
 
     @Bean
     RouterFunction<?> routerFunction() {
@@ -113,9 +114,13 @@ class RouteConfig {
 //}
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 class CoffeeService {
     private final CoffeeRepo repo;
+
+    CoffeeService(CoffeeRepo repo) {
+        this.repo = repo;
+    }
 
     Flux<Coffee> getAllCoffees() {
         return repo.findAll();
@@ -135,15 +140,57 @@ class CoffeeService {
 interface CoffeeRepo extends ReactiveCrudRepository<Coffee, String> {
 }
 
-@Value
+//@Value
 class CoffeeOrder {
-    private String coffeeId;
-    private Instant now;
+    private final String coffeeId;
+    private final Instant now;
+
+    public CoffeeOrder(String coffeeId, Instant now) {
+        this.coffeeId = coffeeId;
+        this.now = now;
+    }
+
+    public String getCoffeeId() {
+        return coffeeId;
+    }
+
+    public Instant getNow() {
+        return now;
+    }
+
+    @Override
+    public String toString() {
+        return "CoffeeOrder{" +
+                "coffeeId='" + coffeeId + '\'' +
+                ", now=" + now +
+                '}';
+    }
 }
 
-@Value
+//@Value
 @Document
 class Coffee {
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
+
+    public Coffee(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Coffee{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
